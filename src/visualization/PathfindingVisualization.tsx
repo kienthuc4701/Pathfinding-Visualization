@@ -1,132 +1,99 @@
-import  { useState, useEffect, useCallback } from 'react';
-import { IPathFinder, PathFinderStrategy } from '@/algorithms/pathfinder/PathfinderStrategy';
-import { Cell, ICell } from '@/model/Cell';
-import { GridSubject, IGridObserver } from '@/model/GridSubject';
-import { MazeGeneratorFactory } from '@/algorithms/mazeGenerator/MazeGeneratorFactory';
-import BFS from '@/algorithms/pathfinder/BFS';
-import DFS from '@/algorithms/pathfinder/DFS';
-import Dijkstra from '@/algorithms/pathfinder/Dijkstra';
-import ControlPanel from '@/components/controls/ControlPanel';
-import Grid from '@/components/grid/Grid';
-
-const GRID_ROWS = 20;
-const GRID_COLS = 24;
+import { MazeGeneratorFactory } from "@/algorithms/mazeGenerator/MazeGeneratorFactory";
+import ControlPanel from "@/components/controls/ControlPanel";
+import Grid from "@/components/grid/Grid";
+import { generateEmptyMaze, getRandomStartEnd } from "@/helpers";
+import { ICell } from "@/model/Cell";
+import { useState, useCallback, useEffect } from "react";
 
 export default function PathFindingVisualization() {
-  const [gridSubject] = useState(() => new GridSubject(initializeGrid()));
-  const [grid, setGrid] = useState<ICell[][]>(gridSubject.getGrid());
-  const [mazeAlgorithm, setMazeAlgorithm] = useState<string>('basic');
-  const [pathAlgorithm, setPathAlgorithm] = useState<string>('dijkstra');
-  const [speed, setSpeed] = useState<number>(50);
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [startCell, setStartCell] = useState<ICell | null>(null);
-  const [endCell, setEndCell] = useState<ICell | null>(null);
+  const [grid, setGrid] = useState<ICell[][]>(() => generateEmptyMaze());
+  const [mazeAlgorithm, setMazeAlgorithm] = useState<string>("empty");
+  const [pathAlgorithm, setPathAlgorithm] = useState<string>("dijkstra");
+
+  const [startCell, setStartCell] = useState<ICell>();
+  const  [endCell, setEndCell] = useState<ICell>();
+
+
   const [isDrawingWall, setIsDrawingWall] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<"START" | "END" | null>(null);
 
-  useEffect(() => {
-    const observer: IGridObserver = {
-      update: (updatedGrid: ICell[][]) => {
-        setGrid([...updatedGrid]);
-      },
-    };
-    gridSubject.attach(observer);
-    return () => gridSubject.detach(observer);
-  }, [gridSubject]);
+  const handleCellClick = useCallback(
+    (row: number, col: number) => {
+      const newGrid = [...grid];
+      const cell = newGrid[row][col];
 
-  function initializeGrid(): ICell[][] {
-    const newGrid: ICell[][] = [];
-    for (let row = 0; row < GRID_ROWS; row++) {
-      const currentRow: ICell[] = [];
-      for (let col = 0; col < GRID_COLS; col++) {
-        currentRow.push(new Cell(row, col));
+      if (cell.type !== "START" && cell.type !== "END") {
+        cell.type = cell.type === "WALL" ? "EMPTY" : "WALL";
+        setIsDrawingWall(cell.type === "WALL");
+        setGrid(newGrid);
       }
-      newGrid.push(currentRow);
-    }
-    return newGrid;
-  }
+    },
+    [grid]
+  );
 
-  const handleCellClick = useCallback((row: number, col: number) => {
-    if (isRunning) return;
+  const handleDragSTART = useCallback(
+    (row: number, col: number) => {
+      const cell = grid[row][col];
+      if (cell.type === "START") {
+        setIsDragging("START");
+      } else if (cell.type === "END") {
+        setIsDragging("END");
+      }
+    },
+    [grid]
+  );
 
-    const newGrid = [...grid];
-    const cell = newGrid[row][col];
+  const handleDragEnter = useCallback(
+    (row: number, col: number) => {
+      if (!isDragging || grid[row][col].type === "WALL") return;
 
-    if (!startCell) {
-      cell.type = 'START';
-      setStartCell(cell);
-    } else if (!endCell) {
-      cell.type = 'END';
-      setEndCell(cell);
-    } else {
-      cell.type = cell.type === 'WALL' ? 'EMPTY' : 'WALL';
-      setIsDrawingWall(cell.type === 'WALL');
-    }
+      const newGrid = [...grid];
+      const oldCell = isDragging === "START" ? startCell : endCell;
 
-    gridSubject.setGrid(newGrid);
-  }, [grid, startCell, endCell, isRunning, gridSubject]);
+      if (oldCell) {
+        newGrid[oldCell.row][oldCell.col].type = "EMPTY";
+      }
 
-  const handleCellHover = useCallback((row: number, col: number) => {
-    if (isRunning || !isDrawingWall) return;
+      newGrid[row][col].type = isDragging;
+      setGrid(newGrid);
+    },
+    [grid, isDragging]
+  );
 
-    const newGrid = [...grid];
-    const cell = newGrid[row][col];
+  const handleDragEND = useCallback(() => {
+    setIsDragging(null);
+  }, []);
 
-    if (cell.type === 'EMPTY') {
-      cell.type = 'WALL';
-      gridSubject.setGrid(newGrid);
-    }
-  }, [grid, isRunning, isDrawingWall, gridSubject]);
-
-  const generateNewMaze = useCallback((algorithm: string) => {
+  const generateNewMaze = (algorithm: string) => {
     const mazeGenerator = MazeGeneratorFactory.create(algorithm);
     const newGrid = mazeGenerator.generate(grid);
     setGrid(newGrid);
-  }, [mazeAlgorithm]);
-
-  const visualizePath = useCallback(async () => {
-    if (isRunning || !startCell || !endCell) return;
-    setIsRunning(true);
-
-    const pathFinder = new PathFinderStrategy(getPathFinderByType(pathAlgorithm));
-    const path = pathFinder.findPath(grid, startCell, endCell);
-
-    for (const cell of path) {
-      await new Promise((resolve) => setTimeout(resolve, 1000 - speed * 10));
-      const newGrid = [...grid];
-      newGrid[cell.row][cell.col].type = 'PATH';
-      gridSubject.setGrid(newGrid);
-    }
-
-    setIsRunning(false);
-  }, [grid, startCell, endCell, isRunning, pathAlgorithm, speed, gridSubject]);
-
-  const getPathFinderByType = (type: string): IPathFinder => {
-    switch (type) {
-     
-      case 'bfs':
-        return new BFS();
-      case 'dfs':
-        return new DFS();
-      default:
-        return new Dijkstra();
-    }
+    getRandomStartEnd(newGrid);
   };
-  
+
+
+  useEffect(()=> {
+    generateNewMaze(mazeAlgorithm);
+}, [mazeAlgorithm]); 
+
   return (
     <div className="max-w-screen-md mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Path Finding Visualization</h1>
       <ControlPanel
         mazeAlgorithm={mazeAlgorithm}
-        setMazeAlgorithm={setMazeAlgorithm}
+        setMazeAlgorithm={(algorithm) => {
+          setMazeAlgorithm(algorithm);
+        }}
         pathAlgorithm={pathAlgorithm}
         setPathAlgorithm={setPathAlgorithm}
-        speed={speed}
-        setSpeed={setSpeed}
-        onGenerateMaze={generateNewMaze}
-        onVisualizePath={visualizePath}
-        isRunning={isRunning}
       />
-      <Grid grid={grid} onCellClick={handleCellClick}/>
+      <Grid
+        grid={grid}
+        onCellClick={handleCellClick}
+        onDragStart={handleDragSTART}
+        onDragEnter={handleDragEnter}
+        onDragEnd={handleDragEND}
+      />
     </div>
   );
 }

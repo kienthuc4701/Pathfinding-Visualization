@@ -6,11 +6,6 @@ interface ControlPanelProps {
   setMazeAlgorithm: (value: string) => void;
   pathAlgorithm: string;
   setPathAlgorithm: (value: string) => void;
-  speed: number;
-  setSpeed: (value: number) => void;
-  onGenerateMaze: (algorithm: string) => void;
-  onVisualizePath: () => void;
-  isRunning: boolean;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -18,9 +13,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setMazeAlgorithm,
   pathAlgorithm,
   setPathAlgorithm,
-  onGenerateMaze,
-  onVisualizePath,
-  isRunning,
 }) => {
   const mazeOptions = [
     { value: 'basic', label: 'Basic Maze' },
@@ -38,7 +30,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const handleMazeAlgorithmChange = (value: string) => {
     setMazeAlgorithm(value);
-    onGenerateMaze(value);
   };
 
   return (
@@ -57,8 +48,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       />
       <button
         className="bg-green-500 text-white px-4 py-2 rounded"
-        onClick={onVisualizePath}
-        disabled={isRunning}
       >
         Start Visualization
       </button>

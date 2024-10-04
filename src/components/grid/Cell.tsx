@@ -5,6 +5,9 @@ import { ICell } from '@/model/Cell';
 interface CellProps {
   cell: ICell;
   onClick: () => void;
+  onDragStart: () => void;
+  onDragEnter: () => void;
+  onDragEnd: () => void;
 }
 
 const Cell: React.FC<CellProps> = ({ cell, onClick }) => {
@@ -31,6 +34,7 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }) => {
       onClick={onClick}
       whileHover={{ scale: 1.2 }}
       whileTap={{ scale: 0.9 }}
+      draggable={cell.type === 'START' || cell.type === 'END'}
     />
   );
 };
