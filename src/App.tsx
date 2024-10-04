@@ -1,11 +1,11 @@
-import { Grid } from "./components/Grid";
-import { PathfinderProvider } from "./contexts/PathfinderContext";
+import { PooitControlProvider } from "./contexts/PointControlContext";
+import PathFindingVisualization from "./visualization/PathfindingVisualization";
 
- const App = () => {
+const App = () => {
   return (
-    <PathfinderProvider>
-      <Grid />
-    </PathfinderProvider>
+    <PooitControlProvider>
+      <PathFindingVisualization />
+    </PooitControlProvider>
   );
 };
 export default App;
