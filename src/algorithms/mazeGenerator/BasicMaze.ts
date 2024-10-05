@@ -1,4 +1,4 @@
-import { ICell } from '@/model/Cell';
+import { CellType, ICell } from '@/model/Cell';
 import { IMazeGenerator } from './MazeGeneratorFactory';
 
 export default class BasicMaze implements IMazeGenerator {
@@ -7,7 +7,7 @@ export default class BasicMaze implements IMazeGenerator {
     newGrid.forEach((row, rowIndex) => {
       row.forEach((_, colIndex) => {
         const cell = grid[rowIndex][colIndex];
-        cell.type = "EMPTY";
+        cell.type = CellType.BASIC;
       });
     });
     return newGrid;

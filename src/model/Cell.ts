@@ -1,4 +1,7 @@
-export type CellType = 'EMPTY' | 'WALL' | 'START' | 'END' | 'PATH' | 'VISITED';
+
+export enum CellType {
+  BASIC, WALL, START, END, PATH, VISITED
+}
 
 export interface ICell {
   row: number;
@@ -7,5 +10,5 @@ export interface ICell {
 }
 
 export class Cell implements ICell {
-  constructor(public row: number, public col: number, public type: CellType = 'EMPTY') {}
+  constructor(public row: number, public col: number, public type: CellType = CellType.BASIC) {}
 }

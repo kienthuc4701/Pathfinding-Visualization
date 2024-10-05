@@ -1,9 +1,11 @@
 import React from 'react';
 import AlgorithmSelector from './AlgorithmsSelector';
+import { MazeAlgorithmType } from '@/model/Algorithm';
+import { MAZE } from '@/constants';
 
 interface ControlPanelProps {
-  mazeAlgorithm: string;
-  setMazeAlgorithm: (value: string) => void;
+  mazeAlgorithm:MazeAlgorithmType;
+  setMazeAlgorithm: (value: MazeAlgorithmType) => void;
   pathAlgorithm: string;
   setPathAlgorithm: (value: string) => void;
 }
@@ -14,23 +16,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   pathAlgorithm,
   setPathAlgorithm,
 }) => {
-  const mazeOptions = [
-    { value: 'basic', label: 'Basic Maze' },
-    { value: 'random', label: 'Random Maze' },
-    { value: 'binaryTree', label: 'Binary Tree Maze' },
-    { value: 'recursiveDivision', label: 'Recursive Division Maze' },
-  ];
-
-  const pathOptions = [
-    { value: 'dijkstra', label: 'Dijkstra' },
-    { value: 'aStar', label: 'A*' },
-    { value: 'bfs', label: 'BFS' },
-    { value: 'dfs', label: 'DFS' },
-  ];
-
-  const handleMazeAlgorithmChange = (value: string) => {
+  
+  const handleMazeAlgorithmChange = (value: MazeAlgorithmType) => {
     setMazeAlgorithm(value);
   };
+
 
   return (
     <div className="mb-4 flex space-x-4 items-center">
@@ -38,14 +28,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         label="Maze Algorithm:"
         value={mazeAlgorithm}
         onChange={handleMazeAlgorithmChange}
-        options={mazeOptions}
+        options={MAZE.options}
       />
-      <AlgorithmSelector
+      {/* <AlgorithmSelector
         label="Path Algorithm:"
         value={pathAlgorithm}
         onChange={setPathAlgorithm}
         options={pathOptions}
-      />
+      /> */}
       <button
         className="bg-green-500 text-white px-4 py-2 rounded"
       >
