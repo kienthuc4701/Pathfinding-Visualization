@@ -11,7 +11,7 @@ interface PointControlContextProps {
 export const PointControlContext =
   createContext<PointControlContextProps | null>(null);
 
-export const PooitControlProvider = ({
+export const PointControlProvider = ({
   children,
 }: {
   children: React.ReactNode;

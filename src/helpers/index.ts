@@ -1,3 +1,7 @@
+import BFS from "@/algorithms/pathfinder/BFS";
+import DFS from "@/algorithms/pathfinder/DFS";
+import Dijkstra from "@/algorithms/pathfinder/Dijkstra";
+import { IPathFinder } from "@/algorithms/pathfinder/PathfinderStrategy";
 import { MAZE } from "@/constants";
 import { Cell, CellType, ICell } from "@/model/Cell";
 
@@ -14,27 +18,28 @@ export const generateEmptyMaze = () => {
   return newGrid;
 };
 
-// Get random cell from maze
-const getRandomCellByType = (grid: ICell[][], type: CellType = CellType.BASIC) => {
-  let row, col;
-  do {
-    row = Math.floor(Math.random() * MAZE.rows);
-    col = Math.floor(Math.random() * MAZE.cols);
-  } while (grid[row][col].type !== type);
-  return { row, col,type };
-};
-
 // Get point A & point B from maze
 export const getRandomStartEnd = (grid: ICell[][]) => {
-  const newGrid = [...grid];
-  const start = getRandomCellByType(newGrid);
+  const emptyCells = grid.flat().filter((cell) => cell.type === CellType.BASIC);
+  const start = emptyCells[Math.floor(Math.random() * emptyCells.length)];
   let end;
   do {
-    end = getRandomCellByType(newGrid);
-  } while (end.row === start.row && end.col === start.col);
+    end = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  } while (end === start);
 
-  newGrid[start.row][start.col].type = CellType.START;
-  newGrid[end.row][end.col].type = CellType.END;
+  start.type = CellType.START;
+  end.type = CellType.END;
 
-  return {start, end}
+  return { start, end };
+};
+// generate pathfinder by algorithm
+export const generatePathfinder = (alogrithm: string): IPathFinder => {
+  switch (alogrithm) {
+    case "BFS":
+      return new BFS();
+    case "DFS":
+      return new DFS();
+    default:
+      return new Dijkstra();
+  }
 };

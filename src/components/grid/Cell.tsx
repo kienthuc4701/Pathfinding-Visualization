@@ -1,16 +1,15 @@
 import React, { useCallback } from "react";
 import { motion } from "framer-motion";
 import { CellType, ICell } from "@/model/Cell";
+import { useGrid } from "@/hooks/useGrid";
 
 interface CellProps {
   cell: ICell;
-  onClick: () => void;
-  onDragStart: () => void;
-  onDragEnter: () => void;
-  onDragEnd: () => void;
 }
 
-const Cell: React.FC<CellProps> = ({ cell, onClick }) => {
+const Cell: React.FC<CellProps> = ({ cell }) => {
+  const { updateCell } = useGrid();
+
   const getCellColor = useCallback(() => {
     switch (cell.type) {
       case CellType.WALL:
@@ -28,10 +27,20 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }) => {
     }
   }, [cell.type]);
 
+  const handleCellClick = (row: number, col: number) => {
+    if (cell.type !== CellType.START && cell.type !== CellType.END) {
+      updateCell(
+        row,
+        col,
+        cell.type === CellType.WALL ? CellType.BASIC : CellType.WALL
+      );
+    }
+  };
+
   return (
     <motion.div
       className={`w-6 h-6 border border-slate-300 ${getCellColor()}`}
-      onClick={onClick}
+      onClick={()=>handleCellClick}
       whileHover={{ scale: 1.2 }}
       whileTap={{ scale: 0.9 }}
       draggable={cell.type === CellType.START || cell.type === CellType.END}

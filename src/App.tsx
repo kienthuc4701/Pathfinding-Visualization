@@ -1,11 +1,14 @@
-import { PooitControlProvider } from "./contexts/PointControlContext";
+import { GridProvider } from "./contexts/GridContext";
+import { PointControlProvider } from "./contexts/PointControlContext";
 import PathFindingVisualization from "./visualization/PathfindingVisualization";
 
 const App = () => {
   return (
-    <PooitControlProvider>
+    <PointControlProvider>
+      <GridProvider>
       <PathFindingVisualization />
-    </PooitControlProvider>
+      </GridProvider>
+    </PointControlProvider>
   );
 };
 export default App;

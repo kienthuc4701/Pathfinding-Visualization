@@ -1,13 +1,11 @@
-import { MazeAlgorithmType } from "@/model/Algorithm";
 import React from "react";
 
 interface AlgorithmSelectorProps {
   label: string;
-  value: MazeAlgorithmType;
-  onChange: (value: MazeAlgorithmType) => void;
+  value: string;
+  onChange: (value: string) => void;
   options: { value: string; label: string }[];
 }
-
 const AlgorithmSelector: React.FC<AlgorithmSelectorProps> = ({
   label,
   value,
@@ -20,7 +18,7 @@ const AlgorithmSelector: React.FC<AlgorithmSelectorProps> = ({
       <select
         className="border p-2 rounded"
         value={value}
-        onChange={(e) => onChange(e.target.value as MazeAlgorithmType) }
+        onChange={(e) => onChange(e.target.value)}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
