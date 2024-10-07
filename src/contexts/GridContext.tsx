@@ -1,6 +1,6 @@
 import { MAZE } from "@/constants";
 import { CellType, ICell } from "@/model/Cell";
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 
 interface GridContext {
   grid: ICell[][];

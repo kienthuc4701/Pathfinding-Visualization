@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import AlgorithmSelector from "./AlgorithmsSelector";
 import { MAZE, PATH } from "@/constants";
 import { PathFinderStrategy } from "@/algorithms/pathfinder/PathfinderStrategy";
 import { generatePathfinder } from "@/helpers";
 import { useGrid } from "@/hooks/useGrid";
-import { CellType, ICell } from "@/model/Cell";
+import { CellType } from "@/model/Cell";
 
 interface ControlPanelProps {
   mazeAlgorithm: string;
@@ -21,19 +21,27 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   const { grid, startCell, endCell, updateCell } = useGrid();
   const [isVisualizing, setIsVisualizing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, _] = useState<string | null>(null);
 
   const visualizePath = useCallback(async () => {
     if (!startCell || !endCell || isVisualizing) return;
 
-    const pathfinder = new PathFinderStrategy(generatePathfinder(pathAlgorithm));
-    const { path, visitedOrder } = pathfinder.findPath(grid, startCell, endCell);
+    const pathfinder = new PathFinderStrategy(
+      generatePathfinder(pathAlgorithm)
+    );
+    const { path, visitedOrder } = pathfinder.findPath(
+      grid,
+      startCell,
+      endCell
+    );
 
     // Visualize visited cells
     for (const cell of visitedOrder) {
       if (cell.type !== CellType.START && cell.type !== CellType.END) {
         updateCell(cell.row, cell.col, CellType.VISITED);
-        await new Promise(resolve => setTimeout(resolve, VISUALIZATION_DELAY));
+        await new Promise((resolve) =>
+          setTimeout(resolve, VISUALIZATION_DELAY)
+        );
       }
     }
 
@@ -41,7 +49,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     for (const cell of path) {
       if (cell.type !== CellType.START && cell.type !== CellType.END) {
         updateCell(cell.row, cell.col, CellType.PATH);
-        await new Promise(resolve => setTimeout(resolve, VISUALIZATION_DELAY));
+        await new Promise((resolve) =>
+          setTimeout(resolve, VISUALIZATION_DELAY)
+        );
       }
     }
 

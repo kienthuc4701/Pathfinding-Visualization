@@ -1,5 +1,3 @@
-import BFS from "@/algorithms/pathfinder/BFS";
-import DFS from "@/algorithms/pathfinder/DFS";
 import Dijkstra from "@/algorithms/pathfinder/Dijkstra";
 import { IPathFinder } from "@/algorithms/pathfinder/PathfinderStrategy";
 import { MAZE } from "@/constants";
