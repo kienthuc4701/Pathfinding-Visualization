@@ -1,6 +1,6 @@
 import { MAZE } from "@/constants";
 import { CellType, ICell } from "@/model/Cell";
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 interface GridContext {
   grid: ICell[][];
@@ -10,37 +10,40 @@ interface GridContext {
   endCell: ICell | null;
   setEndCell: (cell: ICell) => void;
   initializeGrid: () => ICell[][];
-  updateCell:(row: number, col: number, newType: CellType)=> void;
+  updateCell: (row: number, col: number, newType: CellType) => void;
 }
 
 export const GridContext = createContext<GridContext | null>(null);
 
+const initializeGrid = () => {
+  const newGrid: ICell[][] = [];
+  for (let row = 0; row < MAZE.rows; row++) {
+    const currentRow: ICell[] = [];
+    for (let col = 0; col < MAZE.cols; col++) {
+      currentRow.push({ row, col, type: CellType.BASIC });
+    }
+    newGrid.push(currentRow);
+  }
+  return newGrid;
+}
+
 export const GridProvider = ({ children }: { children: React.ReactNode }) => {
-  const [grid, setGrid] = useState<ICell[][]>([]);
+  const [grid, setGrid] = useState<ICell[][]>(()=>initializeGrid());
   const [startCell, setStartCell] = useState<ICell | null>(null);
   const [endCell, setEndCell] = useState<ICell | null>(null);
 
-  const initializeGrid = useCallback(() => {
-    const newGrid: ICell[][] = [];
-    for (let row = 0; row < MAZE.rows; row++) {
-      const currentRow: ICell[] = [];
-      for (let col = 0; col < MAZE.cols; col++) {
-        currentRow.push({ row, col, type: CellType.BASIC });
-      }
-      newGrid.push(currentRow);
-    }
-    return newGrid;
-  }, []);
 
-  const updateCell = useCallback((row: number, col: number, newType: CellType) => {
-    setGrid(prevGrid => {
-      const newGrid = [...prevGrid];
-      newGrid[row] = [...newGrid[row]];
-      newGrid[row][col] = { ...newGrid[row][col], type: newType };
-      return newGrid;
-    });
-  }, []);
-  
+  const updateCell = useCallback(
+    (row: number, col: number, newType: CellType) => {
+      setGrid((prevGrid) => {
+        const newGrid = [...prevGrid];
+        newGrid[row] = [...newGrid[row]];
+        newGrid[row][col] = { ...newGrid[row][col], type: newType };
+        return newGrid;
+      });
+    },
+    []
+  );
 
   return (
     <GridContext.Provider
@@ -52,7 +55,7 @@ export const GridProvider = ({ children }: { children: React.ReactNode }) => {
         endCell,
         setEndCell,
         initializeGrid,
-        updateCell
+        updateCell,
       }}
     >
       {children}

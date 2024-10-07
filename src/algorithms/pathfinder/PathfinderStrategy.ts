@@ -1,7 +1,7 @@
 import { ICell } from "@/model/Cell";
 
 export interface IPathFinder {
-  findPath(grid: ICell[][], start: ICell, end: ICell): ICell[];
+  findPath(grid: ICell[][], start: ICell, end: ICell): { path: ICell[], visitedOrder: ICell[] };
 }
 
 export class PathFinderStrategy {
@@ -15,7 +15,7 @@ export class PathFinderStrategy {
     this.strategy = strategy;
   }
 
-  findPath(grid: ICell[][], start: ICell, end: ICell): ICell[] {
+  findPath(grid: ICell[][], start: ICell, end: ICell): { path: ICell[], visitedOrder: ICell[] } {
     return this.strategy.findPath(grid, start, end);
   }
 }

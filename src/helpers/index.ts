@@ -35,10 +35,6 @@ export const getRandomStartEnd = (grid: ICell[][]) => {
 // generate pathfinder by algorithm
 export const generatePathfinder = (alogrithm: string): IPathFinder => {
   switch (alogrithm) {
-    case "BFS":
-      return new BFS();
-    case "DFS":
-      return new DFS();
     default:
       return new Dijkstra();
   }

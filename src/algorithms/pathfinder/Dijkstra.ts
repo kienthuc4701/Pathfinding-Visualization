@@ -9,36 +9,43 @@ interface DijkstraNode {
 }
 
 export default class Dijkstra implements IPathFinder {
-  findPath(grid: ICell[][], start: ICell, end: ICell): ICell[] {
-    const nodes: DijkstraNode[][] = grid.map((row) =>
-      row.map((cell) => ({
+  findPath(grid: ICell[][], start: ICell, end: ICell): { path: ICell[], visitedOrder: ICell[] } {
+    const nodes: DijkstraNode[][] = grid.map(row =>
+      row.map(cell => ({
         cell,
         distance: Infinity,
         previous: null,
       }))
     );
+
     const startNode = nodes[start.row][start.col];
     startNode.distance = 0;
 
     const priorityQueue = new PriorityQueue<DijkstraNode>();
     priorityQueue.enqueue(startNode);
 
-      while (!priorityQueue.isEmpty()) {
-        const closestNode = priorityQueue.dequeue()!;
+    const visitedOrder: ICell[] = [];
 
-        if (closestNode.cell.type === CellType.WALL) continue;
+    while (!priorityQueue.isEmpty()) {
+      const closestNode = priorityQueue.dequeue()!;
 
-        closestNode.cell.type = CellType.VISITED;
+      if (closestNode.cell.type === CellType.WALL) continue;
 
-        if (
-          closestNode.cell.row === end.row &&
-          closestNode.cell.col === end.col
-        ) {
-          return this.reconstructPath(closestNode);
-        }
-        this.updateUnvisitedNeighbors(closestNode, nodes, priorityQueue);
+      if (closestNode.distance === Infinity) break;
+
+      visitedOrder.push(closestNode.cell);
+
+      if (closestNode.cell.row === end.row && closestNode.cell.col === end.col) {
+        return {
+          path: this.reconstructPath(closestNode),
+          visitedOrder,
+        };
       }
-    return [];
+
+      this.updateUnvisitedNeighbors(closestNode, nodes, priorityQueue);
+    }
+
+    return { path: [], visitedOrder };
   }
 
   private updateUnvisitedNeighbors(
@@ -53,6 +60,7 @@ export default class Dijkstra implements IPathFinder {
       [row, col - 1],
       [row, col + 1],
     ];
+
     for (const [r, c] of neighbors) {
       if (r >= 0 && r < nodes.length && c >= 0 && c < nodes[0].length) {
         const neighbor = nodes[r][c];
@@ -74,6 +82,7 @@ export default class Dijkstra implements IPathFinder {
       path.unshift(currentNode.cell);
       currentNode = currentNode.previous;
     }
+
     return path;
   }
 }
