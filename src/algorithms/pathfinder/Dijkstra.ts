@@ -41,7 +41,6 @@ export default class Dijkstra implements IPathFinder {
           visitedOrder,
         };
       }
-
       this.updateUnvisitedNeighbors(closestNode, nodes, priorityQueue);
     }
 
@@ -82,7 +81,6 @@ export default class Dijkstra implements IPathFinder {
       path.unshift(currentNode.cell);
       currentNode = currentNode.previous;
     }
-
     return path;
   }
 }

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { motion } from "framer-motion";
 import { CellType, ICell } from "@/model/Cell";
-import { useGrid } from "@/hooks/useGrid";
+import { useGrid } from "@/hooks/useMaze";
 
 interface CellProps {
   cell: ICell;

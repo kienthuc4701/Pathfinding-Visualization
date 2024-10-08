@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback,useState } from "react";
 import AlgorithmSelector from "./AlgorithmsSelector";
 import { MAZE, PATH } from "@/constants";
 import { PathFinderStrategy } from "@/algorithms/pathfinder/PathfinderStrategy";
 import { generatePathfinder } from "@/helpers";
-import { useGrid } from "@/hooks/useGrid";
 import { CellType } from "@/model/Cell";
+import { useMaze } from "@/hooks/useMaze";
 
 interface ControlPanelProps {
   mazeAlgorithm: string;
@@ -19,13 +19,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   pathAlgorithm,
   setPathAlgorithm,
 }) => {
-  const { grid, startCell, endCell, updateCell } = useGrid();
+  const { grid, startCell, endCell, updateCell } = useMaze();
   const [isVisualizing, setIsVisualizing] = useState(false);
   const [error, _] = useState<string | null>(null);
 
   const visualizePath = useCallback(async () => {
     if (!startCell || !endCell || isVisualizing) return;
-
     const pathfinder = new PathFinderStrategy(
       generatePathfinder(pathAlgorithm)
     );
@@ -34,7 +33,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       startCell,
       endCell
     );
-
     // Visualize visited cells
     for (const cell of visitedOrder) {
       if (cell.type !== CellType.START && cell.type !== CellType.END) {
@@ -44,7 +42,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         );
       }
     }
-
     // Visualize the path
     for (const cell of path) {
       if (cell.type !== CellType.START && cell.type !== CellType.END) {
@@ -54,9 +51,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         );
       }
     }
-
     setIsVisualizing(false);
   }, [grid, startCell, endCell, pathAlgorithm, , updateCell]);
+
 
   return (
     <div className="mb-4 space-y-4">

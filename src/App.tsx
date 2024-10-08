@@ -1,11 +1,11 @@
-import { GridProvider } from "./contexts/GridContext";
+import { MazeProvider } from "./contexts/MazeContext";
 import PathFindingVisualization from "./visualization/PathfindingVisualization";
 
 const App = () => {
   return (
-      <GridProvider>
+    <MazeProvider>
       <PathFindingVisualization />
-      </GridProvider>
+    </MazeProvider>
   );
 };
 export default App;
