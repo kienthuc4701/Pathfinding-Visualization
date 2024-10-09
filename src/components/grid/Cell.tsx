@@ -1,16 +1,15 @@
 import React, { useCallback } from "react";
-import { motion } from "framer-motion";
-import { CellType, ICell } from "@/model/Cell";
-import { useGrid } from "@/hooks/useMaze";
+import { useAppContext } from "@/contexts/AppContext";
+import { ICell, CellType } from "@/types";
 
 interface CellProps {
   cell: ICell;
 }
 
 const Cell: React.FC<CellProps> = ({ cell }) => {
-  const { updateCell } = useGrid();
+  const { dispatch, state } = useAppContext();
 
-  const getCellColor = useCallback(() => {
+  const getCellClassName = () => {
     switch (cell.type) {
       case CellType.WALL:
         return "bg-gray-800";
@@ -19,33 +18,74 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
       case CellType.END:
         return "bg-red-500";
       case CellType.PATH:
-        return "bg-yellow-300";
+        return "bg-yellow-400 animate-pulse";
       case CellType.VISITED:
         return "bg-blue-200";
       default:
         return "bg-white";
     }
-  }, [cell.type]);
-
-  const handleCellClick = (row: number, col: number) => {
-    if (cell.type !== CellType.START && cell.type !== CellType.END) {
-      updateCell(
-        row,
-        col,
-        cell.type === CellType.WALL ? CellType.BASIC : CellType.WALL
-      );
-    }
   };
 
+  const handleClick = useCallback(() => {
+    if (cell.type !== CellType.START && cell.type !== CellType.END) {
+      const newType =
+        cell.type === CellType.WALL ? CellType.BASIC : CellType.WALL;
+      dispatch({
+        type: "UPDATE_CELL",
+        payload: { row: cell.row, col: cell.col, cellType: newType },
+      });
+    }
+  }, [cell, dispatch]);
+
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.dataTransfer.setData("text/plain", `${cell.row},${cell.col}`);
+    },
+    [cell]
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const [startRow, startCol] = e.dataTransfer
+        .getData("text")
+        .split(",")
+        .map(Number);
+      const startCell = state.grid[startRow][startCol];
+
+      if (startCell.type === CellType.START) {
+        dispatch({
+          type: "DRAG_START",
+          payload: { row: cell.row, col: cell.col },
+        });
+      } else if (startCell.type === CellType.END) {
+        dispatch({
+          type: "DRAG_END",
+          payload: { row: cell.row, col: cell.col },
+        });
+      }
+    },
+    [state.grid, dispatch, cell]
+  );
+
   return (
-    <motion.div
-      className={`w-6 h-6 border border-slate-300 ${getCellColor()}`}
-      onClick={()=>handleCellClick}
-      whileHover={{ scale: 1.2 }}
-      whileTap={{ scale: 0.9 }}
+    <div
+      className={`w-6 h-6 border ${getCellClassName()} ${
+        cell.type === CellType.START || cell.type === CellType.END
+          ? "cursor-move"
+          : "cursor-pointer"
+      } transition-colors duration-300`}
+      onClick={handleClick}
       draggable={cell.type === CellType.START || cell.type === CellType.END}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     />
   );
 };
 
-export default Cell;
+export default React.memo(Cell);

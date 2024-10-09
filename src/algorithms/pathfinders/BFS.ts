@@ -1,7 +1,7 @@
-import { ICell } from "@/model/Cell";
-import { IPathFinder } from "./PathfinderStrategy";
+import { ICell, IPathFinder } from "@/types";
 
-export default class BFS implements IPathFinder {
+
+export class BFS implements IPathFinder {
   findPath(
     grid: ICell[][],
     start: ICell,

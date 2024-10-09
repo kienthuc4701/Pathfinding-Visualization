@@ -1,8 +1,7 @@
-import { ICell } from "@/model/Cell";
-import { IPathFinder } from "./PathfinderStrategy";
+import { ICell, IPathFinder } from "@/types";
 
 
-export default class DFS implements IPathFinder {
+export class DFS implements IPathFinder {
   findPath(
     grid: ICell[][],
     start: ICell,

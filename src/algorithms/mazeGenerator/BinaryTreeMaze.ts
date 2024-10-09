@@ -1,5 +1,4 @@
-import { ICell } from '@/model/Cell';
-import { IMazeGenerator } from './MazeGeneratorFactory';
+import { ICell, IMazeGenerator } from "@/types";
 
 export default class BinaryTreeMaze implements IMazeGenerator {
   generate(grid: ICell[][]): ICell[][] {
