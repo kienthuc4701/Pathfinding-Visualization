@@ -12,15 +12,15 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
   const getCellClassName = () => {
     switch (cell.type) {
       case CellType.WALL:
-        return "bg-gray-800";
+        return "bg-[#433878]";
       case CellType.START:
-        return "bg-green-500";
+        return "bg-[#86D293]";
       case CellType.END:
-        return "bg-red-500";
+        return "bg-[#86D293]";
       case CellType.PATH:
-        return "bg-yellow-400 animate-pulse";
+        return "bg-[#3A6D8C] animate-pulse";
       case CellType.VISITED:
-        return "bg-blue-200";
+        return "bg-[#F2E5BF]";
       default:
         return "bg-white";
     }
@@ -39,7 +39,8 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
 
   const handleDragStart = useCallback(
     (e: React.DragEvent) => {
-      e.dataTransfer.setData("text/plain", `${cell.row},${cell.col}`);
+      // store data of this item
+      e.dataTransfer.setData("ID", `${cell.row},${cell.col}`);
     },
     [cell]
   );
@@ -52,9 +53,10 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
     (e: React.DragEvent) => {
       e.preventDefault();
       const [startRow, startCol] = e.dataTransfer
-        .getData("text")
+        .getData("ID")
         .split(",")
         .map(Number);
+        
       const startCell = state.grid[startRow][startCol];
 
       if (startCell.type === CellType.START) {

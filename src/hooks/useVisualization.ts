@@ -58,6 +58,7 @@ export const useVisualization = () => {
     state.isVisualizing,
     state.grid,
     state.pathAlgorithm,
+    state.mazeAlgorithm,
     dispatch,
     updateCell,
   ]);
@@ -73,12 +74,14 @@ export const useVisualization = () => {
     }
     const newGrid = mazeGenerator.generate(state.grid);
     dispatch({ type: "SET_GRID", payload: newGrid });
-
-    // Update start and end cells
-    const startCell = newGrid[0][0];
-    const endCell = newGrid[newGrid.length - 1][newGrid[0].length - 1];
-    dispatch({ type: "SET_START_CELL", payload: startCell });
-    dispatch({ type: "SET_END_CELL", payload: endCell });
+    dispatch({
+      type: "UPDATE_CELL",
+      payload: { ...state.startCell!, cellType: CellType.START },
+    });
+    dispatch({
+      type: "UPDATE_CELL",
+      payload: { ...state.endCell!, cellType: CellType.END },
+    });
   }, [state.mazeAlgorithm, state.grid, dispatch]);
 
   return { visualizePath, generateMaze, updateCell };

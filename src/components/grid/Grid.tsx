@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppContext } from '@/contexts/AppContext';
 import Cell from './Cell';
+import { useAppContext } from '@/contexts/AppContext';
 import { GRID_COLS } from '@/ultis/constants';
 
 const Grid: React.FC = () => {

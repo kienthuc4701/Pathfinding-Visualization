@@ -1,5 +1,5 @@
-export const GRID_ROWS = 20;
-export const GRID_COLS = 24;
+export const GRID_ROWS = 18;
+export const GRID_COLS = 34;
 export const VISUALIZATION_DELAY = 50;
 export const PATH_DELAY = 50; // milliseconds
 
@@ -16,5 +16,3 @@ export const MAZE_ALGORITHMS = {
   RANDOMIZED: "RANDOMIZED",
   RECURSIVE_DIVISION: "RECURSIVE_DIVISION",
 };
-
-export const THRESH_HOLD_WALL = 0.5
