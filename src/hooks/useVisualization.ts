@@ -21,6 +21,7 @@ export const useVisualization = () => {
     dispatch({ type: "CLEAR_PATH" });
 
     const pathfinder = pathfinders[state.pathAlgorithm];
+
     if (!pathfinder) {
       console.error(`Pathfinder algorithm '${state.pathAlgorithm}' not found`);
       dispatch({ type: "SET_IS_VISUALIZING", payload: false });

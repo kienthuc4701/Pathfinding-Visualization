@@ -28,8 +28,8 @@ const ControlPanel: React.FC = () => {
         label="Maze Algorithm:"
         value={state.mazeAlgorithm}
         options={Object.entries(MAZE_ALGORITHMS).map(([key, value]) => ({
-          value,
-          label: key,
+          value:key,
+          label: value,
         }))}
         disabled={state.isVisualizing}
       />
@@ -37,8 +37,8 @@ const ControlPanel: React.FC = () => {
         label="Path Algorithm:"
         value={state.pathAlgorithm}
         options={Object.entries(PATH_ALGORITHMS).map(([key, value]) => ({
-          value,
-          label: key,
+          value:key,
+          label: value,
         }))}
         disabled={state.isVisualizing}
       />

@@ -5,14 +5,14 @@ export const PATH_DELAY = 50; // milliseconds
 
 
 export const PATH_ALGORITHMS = {
-  DIJKSTRA: "DIJKSTRA",
+  DIJKSTRA: "Dijkstra",
   A_STAR: "A*",
   BFS: "BFS",
   DFS: "DFS",
 };
 
 export const MAZE_ALGORITHMS = {
-  BASIC: "BASIC",
-  RANDOMIZED: "RANDOMIZED",
-  RECURSIVE_DIVISION: "RECURSIVE_DIVISION",
+  BASIC: "Basic",
+  RANDOMIZED: "Random",
+  RECURSIVE_DIVISION: "Recursive Division",
 };

@@ -11,8 +11,10 @@ interface AppState {
   grid: ICell[][];
   startCell: ICell | null;
   endCell: ICell | null;
-  pathAlgorithm: string;
-  mazeAlgorithm: string;
+  pathAlgorithm: keyof typeof PATH_ALGORITHMS;
+
+  mazeAlgorithm: keyof typeof MAZE_ALGORITHMS;
+
   isVisualizing: boolean;
 }
 
@@ -45,8 +47,8 @@ const initialState: AppState = {
   grid: initialGrid(),
   startCell: { row: 8, col: 4, type: CellType.START },
   endCell: { row: 5, col: 10, type: CellType.END },
-  pathAlgorithm: PATH_ALGORITHMS.DIJKSTRA,
-  mazeAlgorithm: MAZE_ALGORITHMS.BASIC,
+  pathAlgorithm: "DIJKSTRA",
+  mazeAlgorithm: "BASIC",
   isVisualizing: false,
 };
 
@@ -67,14 +69,17 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
             : row
         ),
       };
-    case "SET_START_CELL":
-      return { ...state, startCell: action.payload };
-    case "SET_END_CELL":
-      return { ...state, endCell: action.payload };
     case "SET_PATH_ALGORITHM":
-      return { ...state, pathAlgorithm: action.payload };
+      return {
+        ...state,
+        pathAlgorithm: action.payload as keyof typeof PATH_ALGORITHMS,
+      };
+
     case "SET_MAZE_ALGORITHM":
-      return { ...state, mazeAlgorithm: action.payload };
+      return {
+        ...state,
+        mazeAlgorithm: action.payload as keyof typeof MAZE_ALGORITHMS,
+      };
     case "SET_IS_VISUALIZING":
       return { ...state, isVisualizing: action.payload };
     case "RESET_GRID":
