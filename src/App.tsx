@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { motion } from "framer-motion";
 import Controls from "./components/controls/Controls";
 import Grid from "./components/grid/Grid";
 import { useMazeStore } from "./stores/mazeStore";
