@@ -1,8 +1,5 @@
-export const GRID_ROWS = 18;
-export const GRID_COLS = 34;
-export const VISUALIZATION_DELAY = 50;
-export const PATH_DELAY = 50; // milliseconds
-
+export const GRID_ROWS = 21;
+export const GRID_COLS = 41;
 
 export const PATH_ALGORITHMS = {
   DIJKSTRA: "Dijkstra",
@@ -12,7 +9,14 @@ export const PATH_ALGORITHMS = {
 };
 
 export const MAZE_ALGORITHMS = {
-  BASIC: "Basic",
-  RANDOMIZED: "Random",
+  NORMAL: "Normal",
+  RANDOMIZED: "Random Wall",
   RECURSIVE_DIVISION: "Recursive Division",
+  BINARY_TREE: "Binary Tree"
 };
+
+export const SPEEDS = {
+  FAST: 10,
+  NORMAL: 50,
+  SLOW: 100,
+}

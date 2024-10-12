@@ -1,30 +1,33 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useAppContext } from "@/contexts/AppContext";
+import { usePathfinding } from "@/hooks/usePathfindingStore";
 import { ICell, CellType } from "@/types";
 
 interface CellProps {
   cell: ICell;
 }
 
-const Cell: React.FC<CellProps> = ({ cell }) => {
-  const { dispatch, state } = useAppContext();
+const Cell: React.FC<CellProps> = React.memo(({ cell }) => {
+  const { state, dispatch } = useAppContext();
+  const { calculatePath } = usePathfinding();
 
-  const getCellClassName = () => {
+  const getCellClassName = useMemo(() => {
+    const baseClass = "w-6 h-6 border transition-colors duration-300";
     switch (cell.type) {
       case CellType.WALL:
-        return "bg-[#433878]";
+        return `${baseClass} bg-gray-800`;
       case CellType.START:
-        return "bg-[#86D293]";
+        return `${baseClass} bg-green-500 cursor-move`;
       case CellType.END:
-        return "bg-[#86D293]";
+        return `${baseClass} bg-red-500 cursor-move`;
       case CellType.PATH:
-        return "bg-[#3A6D8C] animate-pulse";
+        return `${baseClass} bg-yellow-400`;
       case CellType.VISITED:
-        return "bg-[#F2E5BF]";
+        return `${baseClass} bg-blue-200`;
       default:
-        return "bg-white";
+        return `${baseClass} bg-white cursor-pointer`;
     }
-  };
+  }, [cell.type]);
 
   const handleClick = useCallback(() => {
     if (cell.type !== CellType.START && cell.type !== CellType.END) {
@@ -34,13 +37,13 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
         type: "UPDATE_CELL",
         payload: { row: cell.row, col: cell.col, cellType: newType },
       });
+      calculatePath();
     }
-  }, [cell, dispatch]);
+  }, [cell, dispatch, calculatePath]);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent) => {
-      // store data of this item
-      e.dataTransfer.setData("ID", `${cell.row},${cell.col}`);
+      e.dataTransfer.setData("text/plain", `${cell.row},${cell.col}`);
     },
     [cell]
   );
@@ -53,34 +56,46 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
     (e: React.DragEvent) => {
       e.preventDefault();
       const [startRow, startCol] = e.dataTransfer
-        .getData("ID")
+        .getData("text")
         .split(",")
         .map(Number);
-        
       const startCell = state.grid[startRow][startCol];
 
       if (startCell.type === CellType.START) {
         dispatch({
-          type: "DRAG_START",
-          payload: { row: cell.row, col: cell.col },
+          type: "SET_START_CELL",
+          payload: { ...cell, type: CellType.START },
+        });
+        dispatch({
+          type: "UPDATE_CELL",
+          payload: { row: cell.row, col: cell.col, cellType: CellType.START },
+        });
+        dispatch({
+          type: "UPDATE_CELL",
+          payload: { row: startRow, col: startCol, cellType: CellType.BASIC },
         });
       } else if (startCell.type === CellType.END) {
         dispatch({
-          type: "DRAG_END",
-          payload: { row: cell.row, col: cell.col },
+          type: "SET_END_CELL",
+          payload: { ...cell, type: CellType.END },
+        });
+        dispatch({
+          type: "UPDATE_CELL",
+          payload: { row: cell.row, col: cell.col, cellType: CellType.END },
+        });
+        dispatch({
+          type: "UPDATE_CELL",
+          payload: { row: startRow, col: startCol, cellType: CellType.BASIC },
         });
       }
+      calculatePath();
     },
-    [state.grid, dispatch, cell]
+    [cell, state.grid, dispatch, calculatePath]
   );
 
   return (
     <div
-      className={`w-6 h-6 border ${getCellClassName()} ${
-        cell.type === CellType.START || cell.type === CellType.END
-          ? "cursor-move"
-          : "cursor-pointer"
-      } transition-colors duration-300`}
+      className={getCellClassName}
       onClick={handleClick}
       draggable={cell.type === CellType.START || cell.type === CellType.END}
       onDragStart={handleDragStart}
@@ -88,6 +103,6 @@ const Cell: React.FC<CellProps> = ({ cell }) => {
       onDrop={handleDrop}
     />
   );
-};
+});
 
-export default React.memo(Cell);
+export default Cell;

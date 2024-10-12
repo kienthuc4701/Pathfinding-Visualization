@@ -1,11 +1,29 @@
-import PathFindingVisualization from "./components/PathfindingVisualization";
-import { AppProvider } from "./contexts/AppContext";
+import React, { useEffect } from "react";
+import { motion } from "framer-motion";
+import Controls from "./components/controls/Controls";
+import Grid from "./components/grid/Grid";
+import { useMazeStore } from "./stores/mazeStore";
+import { useGridStore } from "./stores/gridStore";
 
-const App = () => {
+const App: React.FC = () => {
+  const { resetGrid } = useGridStore();
+  const { generateMaze, selectedMazeAlgorithm } = useMazeStore();
+
+  useEffect(() => {
+    resetGrid();
+  }, []);
+
+  useEffect(() => {
+    generateMaze();
+  }, [selectedMazeAlgorithm]);
+
   return (
-    <AppProvider>
-      <PathFindingVisualization />
-    </AppProvider>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-4xl font-bold mb-4">Pathfinding Visualizer</h1>
+      <Controls />
+        <Grid />
+    </div>
   );
 };
+
 export default App;
