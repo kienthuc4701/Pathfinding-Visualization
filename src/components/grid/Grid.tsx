@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from "react";
 import { usePathfindingStore } from "@/hooks/usePathfindingStore";
-import { CellType, ICell } from "@/types";
+import {  ICell } from "@/types";
 import { GRID_COLS } from "@/ultis/constants";
 
 const CELL_SIZE = 24; // 24px
@@ -16,6 +16,7 @@ const Grid: React.FC = () => {
     isVisualizing,
   } = usePathfindingStore();
 
+
   const handleCellClick = useCallback(
     (row: number, col: number) => {
       if (isVisualizing) return;
@@ -30,8 +31,8 @@ const Grid: React.FC = () => {
   );
 
   const handleDragStart = useCallback(
-    (event: React.DragEvent<HTMLDivElement>, type: CellType) => {
-      event.dataTransfer.setData("text/plain", type);
+    (event: React.DragEvent<HTMLDivElement>, cell: ICell) => {
+      event.dataTransfer.setData("text/plain", JSON.stringify(cell));
     },
     []
   );
@@ -47,12 +48,16 @@ const Grid: React.FC = () => {
     (event: React.DragEvent<HTMLDivElement>, row: number, col: number) => {
       if (isVisualizing) return;
       event.preventDefault();
-      const type = event.dataTransfer.getData("text/plain") as "START" | "END";
-      if (type === "START") {
+      const cell = JSON.parse(event.dataTransfer.getData("text/plain")) as ICell;
+      if (cell.type === "START") {
         setStartPoint({ row, col, type: "START" });
-      } else if (type === "END") {
+        setCellType(row, col, 'START');
+        
+      } else if (cell.type === "END") {
         setEndPoint({ row, col, type: "END" });
+        setCellType(row, col, 'END');
       }
+      setCellType(cell.row, cell.col, 'EMPTY');
     },
     [isVisualizing, setStartPoint, setEndPoint]
   );
@@ -68,22 +73,22 @@ const Grid: React.FC = () => {
   );
 
   const getCellClassName = useCallback((cell: ICell) => {
-    if (cell.type === "WALL") return "bg-gray-800";
-    if (cell.type === "START") return "bg-green-500";
-    if (cell.type === "END") return "bg-red-500";
-    if (cell.type === "PATH") return "bg-yellow-500 animate-pulse";
-    if (cell.type === "VISITED") return "bg-blue-200";
+    if (cell.type === "WALL") return "bg-[#212529]";
+    if (cell.type === "START") return "bg-[#c13b63]";
+    if (cell.type === "END") return "bg-[#eb7f03]";
+    if (cell.type === "PATH") return "bg-[#897c80] animate-pulse";
+    if (cell.type === "VISITED") return "bg-[#839788]";
     return "bg-white";
   }, []);
 
   return (
     <Fragment>
-      <div style={gridStyle} className="bg-gray-200">
+      <div style={gridStyle}>
         {grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <div
               key={`${rowIndex}-${colIndex}`}
-              className={`${getCellClassName(cell)} border border-gray-200`}
+              className={`${getCellClassName(cell)} border border-gray-300`}
               style={{
                 width: `${CELL_SIZE}px`,
                 height: `${CELL_SIZE}px`,
@@ -92,7 +97,7 @@ const Grid: React.FC = () => {
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
               draggable={cell.type === "START" || cell.type === "END"}
-              onDragStart={(e) => handleDragStart(e, cell.type)}
+              onDragStart={(e) => handleDragStart(e, cell)}
             />
           ))
         )}

@@ -1,62 +1,96 @@
-import { useAlgorithmStore } from '@/stores/algorithmStore'
-import { useGridStore } from '@/stores/gridStore'
-import { useMazeStore } from '@/stores/mazeStore'
-import { useVisualizationStore } from '@/stores/visualizationStore'
-import { AlgorithmType, MazeType } from '@/types'
-import { MAZE_ALGORITHMS, PATH_ALGORITHMS } from '@/ultis/constants'
-import React from 'react'
+import { useAlgorithmStore } from "@/stores/algorithmStore";
+import { useGridStore } from "@/stores/gridStore";
+import { useMazeStore } from "@/stores/mazeStore";
+import { useVisualizationStore } from "@/stores/visualizationStore";
+import { MAZE_ALGORITHMS, PATH_ALGORITHMS, SPEEDS } from "@/ultis/constants";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import React, { Fragment } from "react";
+import { AlgorithmType, MazeType } from "@/types";
+import { Button } from "../ui/button";
 
 const Controls: React.FC = () => {
-  const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithmStore()
-  const { selectedMazeAlgorithm, setSelectedMazeAlgorithm, generateMaze } = useMazeStore()
-  const { visualizePathfinding, isVisualizing } = useVisualizationStore()
-  const { resetGrid } = useGridStore()
+  const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithmStore();
+  const { selectedMazeAlgorithm, setSelectedMazeAlgorithm, generateMaze } =
+    useMazeStore();
+  const { visualizePathfinding, isVisualizing, speed, setSpeed } =
+    useVisualizationStore();
+  const { resetGrid } = useGridStore();
+
+  const isDisabled = isVisualizing;
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 mb-4">
-      <select
-        value={selectedAlgorithm}
-        onChange={(e) => setSelectedAlgorithm(e.target.value as AlgorithmType)}
-        className="px-4 py-2 border rounded"
-        disabled={isVisualizing}
-      >
-        {Object.entries(PATH_ALGORITHMS).map(([key,value])=>{
-          return <option key={key} value={key}>{value}</option>
-        })}
-      </select>
-      <select
-        value={selectedMazeAlgorithm}
-        onChange={(e) => setSelectedMazeAlgorithm(e.target.value as MazeType)}
-        className="px-4 py-2 border rounded"
-        disabled={isVisualizing}
-      >
-        {Object.entries(MAZE_ALGORITHMS).map(([key,value])=>{
-          return <option key={key} value={key}>{value}</option>
-        })}
-      </select>
-      <button
-        onClick={generateMaze}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        disabled={isVisualizing}
-      >
-        Generate Maze
-      </button>
-      <button
-        onClick={visualizePathfinding}
-        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        disabled={isVisualizing}
-      >
-        Visualize
-      </button>
-      <button
-        onClick={resetGrid}
-        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        disabled={isVisualizing}
-      >
-        Reset
-      </button>
-    </div>
-  )
-}
+    <Fragment>
+      <div className="flex gap-4 mb-4">
+        <Select
+          value={selectedAlgorithm}
+          onValueChange={(value) =>
+            setSelectedAlgorithm(value as AlgorithmType)
+          }
+          disabled={isDisabled}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select algorithm:" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(PATH_ALGORITHMS).map(([key, value]) => (
+              <SelectItem key={`${key}-${value}`} value={key}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={selectedMazeAlgorithm}
+          onValueChange={(value) => setSelectedMazeAlgorithm(value as MazeType)}
+          disabled={isDisabled}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select maze algorithm:" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(MAZE_ALGORITHMS).map(([key, value]) => (
+              <SelectItem key={`${key}-${value}`} value={key}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={speed.toString()}
+          onValueChange={(value) => setSpeed(Number.parseInt(value))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select speed:" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(SPEEDS).map(([key, value]) => (
+              <SelectItem key={key} value={value.toString()}>
+                {key}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex gap-4 mb-4">
+        <Button onClick={generateMaze} disabled={isDisabled}>
+          Generate Maze
+        </Button>
+        <Button onClick={visualizePathfinding} disabled={isDisabled}>
+          Visualize
+        </Button>
+        <Button onClick={resetGrid} disabled={isDisabled}>
+          Reset
+        </Button>
+      </div>
+    </Fragment>
+  );
+};
 
-export default Controls
+export default Controls;

@@ -19,7 +19,7 @@ export const useGridStore = create<GridState>((set, get) => ({
   grid: [],
   gridSize: { rows: 20, cols: 30 },
   startPoint: { row: 10, col: 10, type: "START" },
-  endPoint: { row: 12, col: 20, type: "END" },
+  endPoint: { row: 12, col: 28, type: "END" },
 
   setGrid: (grid) => set({ grid }),
   setGridSize: (size) => set({ gridSize: size }),

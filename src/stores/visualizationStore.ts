@@ -2,21 +2,27 @@ import { create } from "zustand";
 import { useGridStore } from "./gridStore";
 import { useAlgorithmStore } from "./algorithmStore";
 import { getPathfinding } from "@/algorithms/algorithm";
+import { SPEEDS } from "@/ultis/constants";
 interface VisualizationState {
   isVisualizing: boolean;
   error: string | null;
+  speed: number;
   setIsVisualizing: (isVisualizing: boolean) => void;
   setError: (error: string | null) => void;
   visualizePathfinding: () => Promise<void>;
+  setSpeed: (speed: number) => void;
 }
 
-export const useVisualizationStore = create<VisualizationState>((set) => ({
+export const useVisualizationStore = create<VisualizationState>((set,get) => ({
   isVisualizing: false,
   error: null,
+  speed: SPEEDS.NORMAL,
   setIsVisualizing: (isVisualizing) => set({ isVisualizing }),
   setError: (error) => set({ error }),
-
+  setSpeed: (speed) => set({ speed }),
   visualizePathfinding: async () => {
+    const {speed} = get();
+
     const { grid, startPoint, endPoint, setCellType } = useGridStore.getState();
     const { selectedAlgorithm } = useAlgorithmStore.getState();
     set({ isVisualizing: true, error: null });
@@ -35,14 +41,12 @@ export const useVisualizationStore = create<VisualizationState>((set) => ({
         start,
         end
       );
-
-      console.log(path, visitedCells);
-
+      
       // Visualize visited cells
       for (let i = 0; i < visitedCells.length; i++) {
         const cell = visitedCells[i];
         if (cell !== start && cell !== end) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, speed));
           setCellType(cell.row, cell.col, "VISITED");
         }
       }
@@ -51,7 +55,7 @@ export const useVisualizationStore = create<VisualizationState>((set) => ({
       for (let i = 0; i < path.length; i++) {
         const cell = path[i];
         if (cell !== start && cell !== end) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, speed));
           setCellType(cell.row, cell.col, "PATH");
         }
       }

@@ -78,8 +78,8 @@ export const binaryTree = (
   }
 
   // Step 3: Iterate through the inner grid only
-  for (let row = 2; row < GRID_ROWS; row += 2) {
-    for (let col = 2; col < GRID_COLS; col += 2) {
+  for (let row = 0; row < GRID_ROWS; row += 2) {
+    for (let col = 0; col < GRID_COLS; col += 2) {
       const cell = newGrid[row][col];
       cell.type = "EMPTY"; // Carve the current cell as a path
 
