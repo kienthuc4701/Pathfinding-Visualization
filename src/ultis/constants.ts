@@ -5,7 +5,7 @@ export const PATH_ALGORITHMS = {
   DIJKSTRA: "Dijkstra",
   // A_STAR: "A*",
   BFS: "BFS",
-  // DFS: "DFS",
+  DFS: "DFS",
 };
 
 export const MAZE_ALGORITHMS = {

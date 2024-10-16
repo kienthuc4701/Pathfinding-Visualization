@@ -24,7 +24,9 @@ export const getPathfinding = (
     case "DIJKSTRA":
       return dijkstra(grid, star, end);
     case "BFS":
-      return bfs(grid, star, end)
+      return bfs(grid, star, end);
+    case "DFS":
+      return dfs(grid, star, end);
     default:
       return dijkstra(grid, star, end);
   }
@@ -34,9 +36,9 @@ export const dijkstra = (
   grid: ICell[][],
   start: ICell,
   end: ICell
-):{path: ICell[], visitedCells: ICell[]} => {
+): { path: ICell[]; visitedCells: ICell[] } => {
   const queue = [start];
-  const visitedCells: ICell[] = []
+  const visitedCells: ICell[] = [];
   const distances = new Map<ICell, number>();
   const previous = new Map<ICell, ICell | null>();
 
@@ -50,11 +52,11 @@ export const dijkstra = (
     if (current === end) break;
 
     for (const neighbor of getNeighbors(grid, current)) {
-        const distance = (distances.get(current) || 0) + 1;
-        if (!distances.has(neighbor) || distance < distances.get(neighbor)!) {
-          distances.set(neighbor, distance);
-          previous.set(neighbor, current);
-          queue.push(neighbor);
+      const distance = (distances.get(current) || 0) + 1;
+      if (!distances.has(neighbor) || distance < distances.get(neighbor)!) {
+        distances.set(neighbor, distance);
+        previous.set(neighbor, current);
+        queue.push(neighbor);
       }
     }
   }
@@ -66,7 +68,7 @@ export const dijkstra = (
     current = previous.get(current) || null;
   }
 
-  return {path, visitedCells};
+  return { path, visitedCells };
 };
 
 export const aStar = (grid: ICell[][], start: ICell, end: ICell): ICell[] => {
@@ -120,17 +122,21 @@ export const aStar = (grid: ICell[][], start: ICell, end: ICell): ICell[] => {
   return []; // No path found
 };
 
-export const bfs = (grid: ICell[][], start: ICell, end: ICell): {path: ICell[], visitedCells: ICell[]} => {
+export const bfs = (
+  grid: ICell[][],
+  start: ICell,
+  end: ICell
+): { path: ICell[]; visitedCells: ICell[] } => {
   const queue = [start];
-  const visitedCells: ICell[] = []
+  const visitedCells: ICell[] = [];
   const previous = new Map<ICell, ICell | null>();
 
   previous.set(start, null);
-  
+
   while (queue.length > 0) {
     const current = queue.shift()!;
     visitedCells.push(current);
-    
+
     if (current === end) break;
 
     for (const neighbor of getNeighbors(grid, current)) {
@@ -149,26 +155,31 @@ export const bfs = (grid: ICell[][], start: ICell, end: ICell): {path: ICell[], 
     current = previous.get(current) || null;
   }
 
-  return {path, visitedCells};
+  return { path, visitedCells };
 };
 
-export const dfs = (grid: ICell[][], start: ICell, end: ICell): ICell[] => {
+export const dfs = (
+  grid: ICell[][],
+  start: ICell,
+  end: ICell
+): { path: ICell[]; visitedCells: ICell[] } => {
   const stack = [start];
-  const visited = new Set<ICell>();
+  const visitedCells: ICell[] = [];
   const previous = new Map<ICell, ICell | null>();
 
-  visited.add(start);
+  visitedCells.unshift(start);
+
   previous.set(start, null);
 
   while (stack.length > 0) {
-    const current = stack.pop()!;
+    const current = stack.shift()!;
     if (current === end) break;
 
     for (const neighbor of getNeighbors(grid, current)) {
-      if (!visited.has(neighbor)) {
-        visited.add(neighbor);
+      if (!visitedCells.includes(neighbor)) {
+        visitedCells.push(neighbor);
         previous.set(neighbor, current);
-        stack.push(neighbor);
+        stack.unshift(neighbor);
       }
     }
   }
@@ -180,5 +191,5 @@ export const dfs = (grid: ICell[][], start: ICell, end: ICell): ICell[] => {
     current = previous.get(current) || null;
   }
 
-  return path;
+  return { path, visitedCells };
 };
